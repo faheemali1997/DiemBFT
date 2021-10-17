@@ -73,10 +73,23 @@ class Replica(process):
         )
         self.round_done = False
         self.nodes_mapper = nodes_mapper
+        self.round = 0
 
     
     def run():
-        
+
+        try:
+            if self.main.leader_election.get_leader(self.main.pacemaker.current_round) == self.node_id:
+                self.main.pacemaker.current_round += 1
+            proposal_msg = self.main.process_new_round_event(None)
+
+            if proposal_msg:
+                self.main.pacemaker.current_round = 1
+                send(('message', proposal_msg), to = self.nodes)
+        except Exception as e:
+            traceback.print_exc()
+            return
+
         local_timeout()
 
     
@@ -112,10 +125,9 @@ class Replica(process):
 
                 vote_msg,leader = self.main.process_proposal_msg(message)
 
-                if vote_msg is not None:
+                self.round_done=True
 
-                    #set round_done as True
-                    self.round_done = True
+                if vote_msg is not None:
 
                     # send vote_msg to next leader
                     leader = self.nodes_mapper[leader]
@@ -126,7 +138,7 @@ class Replica(process):
 
             elif type(message) == VoteMsg:
                 
-                proposal_msg = self.main.process_vote_message(message)
+                proposal_msg = self.main.process_vote_msg(message)
 
                 if proposal_msg is not None:
 
@@ -150,7 +162,7 @@ def main():
     nodes_count = int(sys.argv[1]) if len(sys.argv) > 1 else 4
     client_count = int(sys.argv[2]) if len(sys.argv) > 1 else 1
 
-    config(channel='fifo', clock = "lamport")
+    config(channel='reliable', clock = "lamport")
 
     replicas = new(Replica, num = nodes_count)
 
@@ -180,7 +192,7 @@ def main():
 
         node_id = get_node_key_formatter(i)
 
-        setup(r, (replicas - {r}, node_id, node_to_public_key_mapper, node_to_key_mapper[node_id], nodes_mapper))
+        setup(r, (replicas, node_id, node_to_public_key_mapper, node_to_key_mapper[node_id], nodes_mapper))
 
     start(clients)
     start(replicas)

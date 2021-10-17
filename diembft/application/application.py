@@ -2,7 +2,7 @@ from diembft.block_tree.blockTree import BlockTree
 from diembft.ledger.ledgerImpl import LedgerImpl
 from diembft.certificates.qc import QC
 from diembft.block_tree.voteinfo import VoteInfo
-from diembft.utilities.constants import GENESIS, BYZANTINE_NODES, GENESIS_PARENT_ROUND, GENESIS_PARENT_ID
+from diembft.utilities.constants import GENESIS, BYZANTINE_NODES, GENESIS_PARENT_ROUND, GENESIS_PARENT_ID, GENESIS_GRAND_PARENT_ID, GENESIS_GRAND_PARENT_ROUND
 from diembft.safety.safety import Safety
 from diembft.utilities.verifier import Verifier
 from diembft.pacemaker.pacemaker import Pacemaker
@@ -37,7 +37,7 @@ class Application:
             GENESIS,
             0,
             GENESIS_PARENT_ID,
-            GENESIS_PARENT_ROUND,
+            -1,
             None
         )
         ledger_commit_info = LedgerCommitInfo(
@@ -59,20 +59,19 @@ class Application:
             self.pacemaker.advance_round_qc(qc)
 
     def process_proposal_msg(self, p: ProposalMsg):
-
-        print( 'Block ', str(p.block.payload), p.sender, p.block.round, p.block.qc.round)
         self.process_certificate_qc(p.block.qc)
         self.process_certificate_qc(p.high_commit_qc)
         self.pacemaker.advance_round_tc(p.last_round_tc)
         current_round = self.pacemaker.current_round
         curr_leader = self.leader_election.get_leader(current_round)
         if p.block.round != current_round or p.sender != curr_leader or p.block.author != curr_leader:
-            return
+            return [None, None]
         self.block_tree.execute_and_insert(p.block)
         vote_msg = self.safety.make_vote(p.block, p.last_round_tc)
         if vote_msg is not None:
             # TODO: Send the vote msg to da file and let da file send it to next leader
             # send vote msg
+            print('VOTE ', vote_msg.vote_info.round)
             next_leader = self.leader_election.get_leader(current_round + 1)
             return [vote_msg, next_leader]
         return [None, None]
@@ -81,7 +80,6 @@ class Application:
         self.process_certificate_qc(message.tmo_info.high_qc)
         self.process_certificate_qc(message.high_commit_qc)
         self.pacemaker.advance_round_tc(message.last_round_tc)
-        print(' I am in application/process_timeout_msg ', self.pacemaker.current_round)
         tc = self.pacemaker.process_remote_timeout(message)
         if tc is not None and type(tc) == TimeOutCertificate:
             self.pacemaker.advance_round_tc(tc)
@@ -93,7 +91,7 @@ class Application:
         qc = self.block_tree.process_vote(message)
         if qc is not None:
             self.process_certificate_qc(qc)
-            self.process_new_round_event(None)
+            return self.process_new_round_event(None)
 
     def process_new_round_event(self, last_tc):
         curr_leader = self.leader_election.get_leader(self.pacemaker.current_round)

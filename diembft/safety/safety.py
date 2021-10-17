@@ -20,7 +20,7 @@ class Safety(Logger):
         self.private_key = ''
         self.public_keys = []
         self.highest_vote_round = 0
-        self.highest_qc_round = 0
+        self.highest_qc_round = -1
         self.ledger = ledger
         self.verifier = verifier
         self.block_tree = block_tree
@@ -41,12 +41,12 @@ class Safety(Logger):
     def safe_to_extend(block_round, qc_round, tc: TimeOutCertificate):
         return Safety.check_consecutive(block_round, tc.round) and qc_round >= max([t.round for t in tc.tmo_high_qc_rounds])
 
-    def safe_to_vote(self, block_round, qc_round, tc:TimeOutCertificate):
+    def safe_to_vote(self, block_round, qc_round, tc: TimeOutCertificate):
         if block_round <= max(self.highest_vote_round, qc_round):
             return False
         return Safety.check_consecutive(block_round, qc_round) or self.safe_to_extend(block_round, qc_round, tc)
 
-    def safe_to_timeout(self, current_round, qc_round, tc:TimeOutCertificate):
+    def safe_to_timeout(self, current_round, qc_round, tc: TimeOutCertificate):
         if qc_round < self.highest_qc_round or current_round <= max(self.highest_vote_round - 1, qc_round):
             return False
         return Safety.check_consecutive(current_round, qc_round) or Safety.check_consecutive(current_round, tc.round)

@@ -1,5 +1,5 @@
 import random
-from diembft.utilities.constants import WINDOW_SIZE, EXCLUDE_SIZE, GENESIS_PARENT_ID
+from diembft.utilities.constants import WINDOW_SIZE, EXCLUDE_SIZE, GENESIS_PARENT_ID, GENESIS_GRAND_PARENT_ID, GENESIS
 from diembft.certificates.qc import QC
 from diembft.ledger.ledgerImpl import LedgerImpl
 from diembft.block_tree.block import Block
@@ -24,7 +24,13 @@ class LeaderElection:
         last_authors = []
         current_qc = qc
         i = 0
-        while i < self.window_size or len(last_authors) < self.exclude_size:
+        while i < self.window_size and len(last_authors) < self.exclude_size:
+
+            if current_qc.vote_info.parent_id == GENESIS or current_qc.vote_info.parent_id == GENESIS_GRAND_PARENT_ID or current_qc.vote_info.parent_id == GENESIS_PARENT_ID:
+                return self.get_leader(self.pace_maker.current_round)
+
+            print(' XYZVAS ', current_qc.vote_info.parent_id)
+
             # Block committed for the round r-2
             current_block: Block = self.ledger.committed_block(current_qc.vote_info.parent_id)
 
@@ -65,7 +71,10 @@ class LeaderElection:
         extended_round = qc.vote_info.parent_round
         qc_round = qc.vote_info.round
         current_round = self.pace_maker.current_round
-        if extended_round + 1 == qc_round and qc_round + 1 == current_round and qc.vote_info.parent_id != GENESIS_PARENT_ID:
+        if extended_round + 1 == qc_round and \
+                qc_round + 1 == current_round and \
+                qc.vote_info.parent_id != GENESIS_PARENT_ID and \
+                qc.vote_info.parent_id != GENESIS:
             self.reputation_leaders[current_round + 1] = self.elect_reputation_leader(qc)
 
     def get_leader(self, round):

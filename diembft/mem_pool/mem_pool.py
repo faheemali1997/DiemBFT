@@ -21,6 +21,8 @@ class MemPool:
         if len(queue) > 0:
             return queue.pop(0)
 
+        print('In Mem-pool ', 'I am empty')
+
         # send a No-op with no-op client id and no-op signature
         # whitelist the signature and client_id
         return Nop('-1', '')

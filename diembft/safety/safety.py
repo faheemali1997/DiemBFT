@@ -38,8 +38,8 @@ class Safety(Logger):
         return round + 1 == block_round
 
     @staticmethod
-    def safe_to_extend(self, block_round, qc_round, tc: TimeOutCertificate):
-        return Safety.check_consecutive(block_round,tc.round) and qc_round >= max(tc.tmo_high_qc_rounds)
+    def safe_to_extend(block_round, qc_round, tc: TimeOutCertificate):
+        return Safety.check_consecutive(block_round, tc.round) and qc_round >= max([t.round for t in tc.tmo_high_qc_rounds])
 
     def safe_to_vote(self, block_round, qc_round, tc:TimeOutCertificate):
         if block_round <= max(self.highest_vote_round, qc_round):

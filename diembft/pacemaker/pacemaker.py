@@ -5,13 +5,12 @@ from diembft.messages.timeOutMessage import TimeOutMessage
 import time
 from diembft.certificates.qc import QC
 from collections import defaultdict
-from diembft.pacemaker.timeoutInfo import TimeOutInfo
 
 
 class Pacemaker:
 
     def __init__(self, safety: Safety, block_tree: BlockTree, byzantine_nodes: int, timer_constant: int = 4):
-        self.current_round = 1
+        self.current_round = 0
         self.last_round_tc = None
         self.pending_timeouts = defaultdict(Pacemaker.default_function)
         self.timer_constant = timer_constant
@@ -46,7 +45,7 @@ class Pacemaker:
         )
 
     @staticmethod
-    def find_sender_in_list(tmo_list: list, sender: str):
+    def find_sender_in_list(tmo_list, sender: str):
 
         for t in list(tmo_list):
             if t.sender == sender:
@@ -71,13 +70,6 @@ class Pacemaker:
             )
         return None
 
-    # def advance_round(self, tc: TimeOutCertificate):
-    #     if tc is None or tc.round < self.current_round:
-    #         return False
-    #     self.last_round_tc = tc
-    #     # start timer
-    #     return True
-    #
     def advance_round_qc(self, qc: QC):
         if qc.vote_info.round < self.current_round:
             return False
@@ -87,7 +79,8 @@ class Pacemaker:
         return True
 
     def advance_round_tc(self, tc: TimeOutCertificate):
-        if tc is None or tc.round is None or tc.round < self.current_round:
+        print(tc)
+        if tc is None or tc.round < self.current_round:
             return False
         self.last_round_tc = tc
         self.current_round = tc.round + 1

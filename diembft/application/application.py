@@ -12,6 +12,9 @@ from diembft.utilities.generateKeys import GenerateKeys
 from diembft.messages.voteMsg import VoteMsg
 from diembft.mem_pool.memPoolHelper import MemPoolHelper
 from diembft.messages.timeOutMessage import TimeOutMessage
+from diembft.certificates.timeOutCertficate import TimeOutCertificate
+from diembft.block_tree.ledgerCommitInfo import LedgerCommitInfo
+from diembft.block_tree.client_request import ClientRequest
 
 
 class Application:
@@ -37,9 +40,14 @@ class Application:
             GENESIS_PARENT_ROUND,
             None
         )
+        ledger_commit_info = LedgerCommitInfo(
+            '',
+            '',
+            ClientRequest('', '')
+        )
         return QC(
             genesis_vote_info,
-            None,
+            ledger_commit_info,
             0,
             []
         )
@@ -52,6 +60,7 @@ class Application:
 
     def process_proposal_msg(self, p: ProposalMsg):
 
+        print( 'Block ', str(p.block.payload), p.sender, p.block.round, p.block.qc.round)
         self.process_certificate_qc(p.block.qc)
         self.process_certificate_qc(p.high_commit_qc)
         self.pacemaker.advance_round_tc(p.last_round_tc)
@@ -66,16 +75,19 @@ class Application:
             # send vote msg
             next_leader = self.leader_election.get_leader(current_round + 1)
             return [vote_msg, next_leader]
-        return [None,None]
+        return [None, None]
 
     def process_timeout_msg(self, message: TimeOutMessage):
         self.process_certificate_qc(message.tmo_info.high_qc)
         self.process_certificate_qc(message.high_commit_qc)
         self.pacemaker.advance_round_tc(message.last_round_tc)
+        print(' I am in application/process_timeout_msg ', self.pacemaker.current_round)
         tc = self.pacemaker.process_remote_timeout(message)
-        if tc is not None:
+        if tc is not None and type(tc) == TimeOutCertificate:
             self.pacemaker.advance_round_tc(tc)
-            self.process_new_round_event(tc)
+            return self.process_new_round_event(tc)
+
+        return tc
 
     def process_vote_msg(self, message: VoteMsg):
         qc = self.block_tree.process_vote(message)
@@ -85,16 +97,16 @@ class Application:
 
     def process_new_round_event(self, last_tc):
         curr_leader = self.leader_election.get_leader(self.pacemaker.current_round)
-        print('In Leader Election ', curr_leader, self.node_id)
         if curr_leader == self.node_id:
             block = self.block_tree.generate_block(self.mem_pool.get_message(), self.pacemaker.current_round)
             # TODO: Send it to da file and let da file handle sending to all nodes
             return ProposalMsg(
-                block= block,
-                last_tc= last_tc,
-                qc= self.block_tree.high_commit_qc,
-                sender=self.node_id
+                block,
+                last_tc,
+                self.block_tree.high_commit_qc,
+                self.node_id
             )
+        return None
 
 
 

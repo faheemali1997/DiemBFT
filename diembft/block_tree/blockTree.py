@@ -2,7 +2,7 @@ from diembft.block_tree.block import Block
 from diembft.certificates.qc import QC
 from diembft.ledger.ledgerImpl import LedgerImpl
 from diembft.messages.voteMsg import VoteMsg
-from diembft.utilities.constants import BYZANTINE_NODES
+from diembft.utilities.constants import BYZANTINE_NODES, GENESIS_PARENT_ID
 from diembft.utilities.verifier import Verifier
 from diembft.block_tree.blockId import BlockId
 from diembft.utilities.constants import GENESIS
@@ -58,14 +58,18 @@ class BlockTree:
 
     def process_qc(self, qc: QC):
 
-        if qc is not None and qc.ledger_commit_info and qc.ledger_commit_info.commit_state_id is not None and qc.vote_info.parent_id != GENESIS:
-            self.ledger.commit(qc.vote_info.parent_id)
+        if qc is not None and qc.ledger_commit_info and qc.ledger_commit_info.commit_state_id is not None:
 
-            self.pending_block_tree.remove(qc.vote_info.parent_id)
+            if qc.vote_info.parent_id != GENESIS_PARENT_ID:
+                print(' XYZ ', qc.vote_info.parent_id)
+                self.ledger.commit(qc.vote_info.parent_id)
+
+                self.pending_block_tree.remove(qc.vote_info.parent_id)
 
             self.high_commit_qc = qc if qc.vote_info.round > self.high_commit_qc.round else self.high_commit_qc
 
             # self.high_commit_qc = max(qc, self.high_commit_qc, key=lambda a, b: a.vote_info.round > b.vote_info.round)
 
         # self.high_qc = max(qc, self.high_qc, key=lambda a, b: a.vote_info.round > b.vote_info.round)
-        self.high_qc = qc if qc.vote_info.round > self.high_qc.round else self.high_qc
+        print(' QC ', self.high_qc.round, qc.vote_info.round)
+        self.high_qc = (qc if qc.vote_info.round > self.high_qc.round else self.high_qc)

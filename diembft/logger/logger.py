@@ -1,14 +1,18 @@
 import logging
 
+"""as 
+filename=node_id+'_log.txt',
+                            filemode='a',
+                            format='%(asctime)s,%(msecs)d %(name)s %(levelname)s %(message)s',
+                            datefmt='%H:%M:%S',
+                            level=logging.DEBUG
+"""
+
 
 class Logger:
 
     def __init__(self, node_id: str):
-        logging.basicConfig(filename=node_id+'_log.txt',
-                            filemode='a',
-                            format='%(asctime)s,%(msecs)d %(name)s %(levelname)s %(message)s',
-                            datefmt='%H:%M:%S',
-                            level=logging.DEBUG)
+        logging.basicConfig()
 
         self.logger = logging.getLogger(__name__)
         self.node_id = node_id

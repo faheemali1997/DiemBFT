@@ -1,6 +1,0 @@
-16:51:33,653 diembft.logger.logger INFO ['0', 'Signatures are valid']
-16:51:33,653 diembft.logger.logger INFO ['1', 'Signatures are valid']
-16:51:33,654 diembft.logger.logger INFO ['2', 'Signatures are valid']
-16:51:33,654 diembft.logger.logger INFO ['0', 'Signatures are valid']
-16:51:33,654 diembft.logger.logger INFO ['1', 'Signatures are valid']
-16:51:33,654 diembft.logger.logger INFO ['2', 'Signatures are valid']

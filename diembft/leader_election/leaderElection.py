@@ -17,6 +17,7 @@ class LeaderElection:
         self.ledger = ledger
 
     def elect_reputation_leader(self, qc: QC):
+
         # Validators that signed the last window_size committed blocks
         active_validators = []
 
@@ -24,12 +25,10 @@ class LeaderElection:
         last_authors = []
         current_qc = qc
         i = 0
-        while i < self.window_size and len(last_authors) < self.exclude_size:
+        while i < self.window_size or len(last_authors) < self.exclude_size:
 
             if current_qc.vote_info.parent_id == GENESIS or current_qc.vote_info.parent_id == GENESIS_GRAND_PARENT_ID or current_qc.vote_info.parent_id == GENESIS_PARENT_ID:
                 return self.get_leader(self.pace_maker.current_round)
-
-            print(' XYZVAS ', current_qc.vote_info.parent_id)
 
             # Block committed for the round r-2
             current_block: Block = self.ledger.committed_block(current_qc.vote_info.parent_id)
@@ -38,11 +37,11 @@ class LeaderElection:
             block_author = current_block.author
 
             if i < self.window_size:
-                active_validators = active_validators.append(self.get_signature_signer(current_qc.signatures))
+                active_validators.append(self.get_signature_signer(current_qc.signatures))
 
             # Adding the latest Exclude_size of authors to the list
             if len(last_authors) < self.exclude_size:
-                last_authors = last_authors.append(block_author)
+                last_authors.append(block_author)
 
             current_qc = current_block.qc
 

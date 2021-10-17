@@ -105,7 +105,10 @@ class Safety(Logger):
                 ledger_commit_info,
                 self.block_tree.high_commit_qc,
                 self.node_id,
-                self.verifier.sign(str(ledger_commit_info))
+                Signature(
+                    self.node_id,
+                    self.verifier.sign(str(ledger_commit_info))
+                )
             )
         return None
 

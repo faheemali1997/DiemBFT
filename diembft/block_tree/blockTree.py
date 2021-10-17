@@ -53,7 +53,6 @@ class BlockTree:
                 v.vote_info.round,
                 self.pending_votes[vote_idx]
             )
-
             return qc
 
         return None

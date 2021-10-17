@@ -1,5 +1,5 @@
 from diembft.utilities.nop import Nop
-from message import Message
+from diembft.mem_pool.message import Message
 
 """
 MemPool class takes care of two things:
@@ -21,9 +21,11 @@ class MemPool:
         if len(queue) > 0:
             return queue.pop(0)
 
+        print('In Mem-pool ', 'I am empty')
+
         # send a No-op with no-op client id and no-op signature
         # whitelist the signature and client_id
-        return Nop(-1, '')
+        return Nop('-1', '')
 
     # Client enques
     def enque(self, message: Message):

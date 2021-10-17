@@ -10,7 +10,7 @@ from collections import defaultdict
 class Pacemaker:
 
     def __init__(self, safety: Safety, block_tree: BlockTree, byzantine_nodes: int, timer_constant: int = 4):
-        self.current_round = 1
+        self.current_round = 0
         self.last_round_tc = None
         self.pending_timeouts = defaultdict(Pacemaker.default_function)
         self.timer_constant = timer_constant
@@ -24,7 +24,6 @@ class Pacemaker:
     def default_function():
         return set()
 
-    @staticmethod
     def get_round_timer(self):
         return 4 * self.timer_constant
 
@@ -45,13 +44,21 @@ class Pacemaker:
             self.block_tree.high_commit_qc
         )
 
+    @staticmethod
+    def find_sender_in_list(tmo_list, sender: str):
+
+        for t in list(tmo_list):
+            if t.sender == sender:
+                return True
+
+        return False
+
     def process_remote_timeout(self, tmo: TimeOutMessage):
         tmo_info = tmo.tmo_info
-
         if tmo_info.round < self.current_round:
             return None
-        if tmo_info.sender not in self.pending_timeouts[tmo_info.round]:
-            self.pending_timeouts[tmo_info.round].add(tmo_info.sender)
+        if tmo_info.sender and not Pacemaker.find_sender_in_list(self.pending_timeouts[tmo_info.round], tmo_info.sender):
+            self.pending_timeouts[tmo_info.round].add(tmo_info)
         if len(self.pending_timeouts[tmo_info.round]) == self.f + 1:
             # stop timer
             return self.local_timeout_round()
@@ -59,17 +66,10 @@ class Pacemaker:
             return TimeOutCertificate(
                 tmo_info.round,
                 [t for t in self.pending_timeouts[tmo_info.round]],
-                [t.signatuure for t in self.pending_timeouts[tmo_info.round]]
+                [t.signature for t in self.pending_timeouts[tmo_info.round]]
             )
         return None
 
-    # def advance_round(self, tc: TimeOutCertificate):
-    #     if tc is None or tc.round < self.current_round:
-    #         return False
-    #     self.last_round_tc = tc
-    #     # start timer
-    #     return True
-    #
     def advance_round_qc(self, qc: QC):
         if qc.vote_info.round < self.current_round:
             return False
@@ -79,6 +79,7 @@ class Pacemaker:
         return True
 
     def advance_round_tc(self, tc: TimeOutCertificate):
+        print(tc)
         if tc is None or tc.round < self.current_round:
             return False
         self.last_round_tc = tc

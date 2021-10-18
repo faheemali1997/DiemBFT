@@ -21,16 +21,16 @@ import logging
 
 class Application:
 
-    def __init__(self, mapper: dict, nodes: list, node_id: str, keys: list, timer_constant: int, mem_pool: MemPoolHelper):
+    def __init__(self, mapper: dict, nodes: list, node_id: str, keys: list, timer_constant: int, mem_pool: MemPoolHelper, byzentine_nodes: int = 2):
         self.node_id = node_id
         self.mem_pool = mem_pool
         self.nodes = nodes
         self.verifier = Verifier(mapper, keys)
         self.ledger = LedgerImpl(self.node_id)
         self.genesis_qc = Application.generate_genesis_qc()
-        self.block_tree = BlockTree(self.node_id, self.ledger, self.genesis_qc)
+        self.block_tree = BlockTree(self.node_id, self.ledger, self.genesis_qc, byzentine_nodes)
         self.safety = Safety(self.block_tree, self.node_id, self.ledger, self.verifier)
-        self.pacemaker = Pacemaker(self.safety, self.block_tree, BYZANTINE_NODES, timer_constant)
+        self.pacemaker = Pacemaker(self.safety, self.block_tree, byzentine_nodes, timer_constant)
         self.leader_election = LeaderElection(nodes, self.pacemaker, self.ledger)
         self.logger = Logger.get_logger(self.node_id)
 

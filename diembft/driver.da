@@ -3,6 +3,9 @@ from doctest import OutputChecker
 from email import message
 import sys
 
+# config import
+from config.config import configs_four_node,configs_seven_node
+
 #repolica dependencies
 from diembft.mem_pool.memPoolHelper import MemPoolHelper
 from diembft.application.application import Application
@@ -27,12 +30,12 @@ class Client(process):
 
     def run():
         message = self.create_requests()
-        
+
         send(('client_message', message), to=self.replica_nodes)
 
         while(self.count < 2):
             pass
-        
+
         output('Client: Request is executed')
 
         #show have a await statement here
@@ -56,10 +59,10 @@ class Client(process):
 
 class Replica(process):
 
-    def setup(nodes: set, node_id: str, mapper:dict, keys: list, nodes_mapper: dict()):
+    def setup(nodes: set, node_id: str, mapper:dict, keys: list, nodes_mapper: dict(), byzentine_nodes: int = 2):
 
         self.mapper = mapper
-        self.nodes = nodes  
+        self.nodes = nodes
         self.node_id = node_id
         self.mem_pool = MemPoolHelper()
         self.main = Application(
@@ -69,13 +72,14 @@ class Replica(process):
             keys,
             # TODO: Take it from client later
             1,
-            self.mem_pool
+            self.mem_pool,
+            byzentine_nodes
         )
         self.round_done = False
         self.nodes_mapper = nodes_mapper
         self.round = 0
 
-    
+
     def run():
 
         try:
@@ -92,20 +96,20 @@ class Replica(process):
 
         local_timeout()
 
-    
+
     def local_timeout():
-        
+
         run_done = False
 
         while not run_done:
 
             self.round_done = False
 
-            timer_duration = self.main.pacemaker.get_round_timer() 
+            timer_duration = self.main.pacemaker.get_round_timer()
 
             if await(self.round_done):
                 pass
-            
+
             elif timeout(timer_duration):
                 timeout_msg = self.main.pacemaker.local_timeout_round()
                 # broadcast to all the nodes
@@ -118,7 +122,7 @@ class Replica(process):
         self.mem_pool.put_message(client_message)
 
     def receive(msg=('message',message), from_=node):
-        
+
         try:
 
             if type(message) == ProposalMsg:
@@ -137,7 +141,7 @@ class Replica(process):
                     send(('response_message', vote_msg), to=client)
 
             elif type(message) == VoteMsg:
-                
+
                 proposal_msg = self.main.process_vote_msg(message)
 
                 if proposal_msg is not None:
@@ -158,9 +162,17 @@ class Replica(process):
 def main():
 
     output('Main Here starting')
+    config(channel='reliable', clock = "lamport")
+    output(configs_four_node)
 
-    nodes_count = int(sys.argv[1]) if len(sys.argv) > 1 else 4
-    client_count = int(sys.argv[2]) if len(sys.argv) > 1 else 1
+    config = configs_seven_node
+
+    nodes_count = config['num_replicas']
+    client_count = config['num_clients']
+    byzentine_nodes = config['num_byzentine_nodes']
+    timer_constant = config['timer_constant']
+
+    output(byzentine_nodes, nodes_count)
 
     config(channel='reliable', clock = "lamport")
 
@@ -192,7 +204,7 @@ def main():
 
         node_id = get_node_key_formatter(i)
 
-        setup(r, (replicas, node_id, node_to_public_key_mapper, node_to_key_mapper[node_id], nodes_mapper))
+        setup(r, (replicas, node_id, node_to_public_key_mapper, node_to_key_mapper[node_id], nodes_mapper, byzentine_nodes))
 
     start(clients)
     start(replicas)

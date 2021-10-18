@@ -10,7 +10,7 @@ from diembft.mem_pool.message import Message
 
 
 class BlockTree:
-    def __init__(self, node_id, ledger: LedgerImpl, genesis_qc: QC):
+    def __init__(self, node_id, ledger: LedgerImpl, genesis_qc: QC, byzentine_nodes: int = BYZANTINE_NODES):
         self.pending_block_tree = []
         self.pending_votes = {}
         # TODO: high_qc should be parent of genesis
@@ -18,6 +18,7 @@ class BlockTree:
         self.high_commit_qc: QC = genesis_qc  # At the start we have the genesis QC as the high_qc
         self.node_id = node_id
         self.ledger = ledger
+        self.byzentine_nodes = byzentine_nodes
 
     def generate_block(self, message: Message, current_round):
 
@@ -45,7 +46,7 @@ class BlockTree:
         else:
             self.pending_votes[vote_idx] = [v.signature]
 
-        if len(self.pending_votes[vote_idx]) == 2 * BYZANTINE_NODES + 1:
+        if len(self.pending_votes[vote_idx]) == 2 * self.byzentine_nodes + 1:
             # Create a QC
             qc = QC(
                 v.vote_info,

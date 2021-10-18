@@ -1,0 +1,64 @@
+23:41:09,708 diembft.logger.logger INFO Node started processing new round
+23:41:09,712 diembft.logger.logger INFO Node received proposal message and started processing
+23:41:09,714 diembft.logger.logger INFO Node Verified Signatures and are valid
+23:41:09,715 diembft.logger.logger INFO Node Sending Vote Message to Next Leader
+23:41:09,725 diembft.logger.logger INFO Node received proposal message and started processing
+23:41:09,725 diembft.logger.logger INFO Node Verified Signatures and are valid
+23:41:09,725 diembft.logger.logger INFO Node Sending Vote Message to Next Leader
+23:41:09,733 diembft.logger.logger INFO Node received proposal message and started processing
+23:41:09,739 diembft.logger.logger INFO Node Verified Signatures and are valid
+23:41:09,740 diembft.logger.logger INFO Node Sending Vote Message to Next Leader
+23:41:09,746 diembft.logger.logger INFO Node received proposal message and started processing
+23:41:09,748 diembft.logger.logger INFO Node Verified Signatures and are valid
+23:41:09,749 diembft.logger.logger INFO Node Sending Vote Message to Next Leader
+23:41:09,755 diembft.logger.logger INFO Node received proposal message and started processing
+23:41:09,756 diembft.logger.logger INFO Node Verified Signatures and are valid
+23:41:09,756 diembft.logger.logger INFO Node Sending Vote Message to Next Leader
+23:41:09,769 diembft.logger.logger INFO Node received proposal message and started processing
+23:41:09,771 diembft.logger.logger INFO Node Verified Signatures and are valid
+23:41:09,772 diembft.logger.logger INFO Node Sending Vote Message to Next Leader
+23:41:09,780 diembft.logger.logger INFO Node received proposal message and started processing
+23:41:09,782 diembft.logger.logger INFO Node Verified Signatures and are valid
+23:41:09,782 diembft.logger.logger INFO Node Sending Vote Message to Next Leader
+23:41:09,794 diembft.logger.logger INFO Node received proposal message and started processing
+23:41:09,795 diembft.logger.logger INFO Node Verified Signatures and are valid
+23:41:09,796 diembft.logger.logger INFO Node Sending Vote Message to Next Leader
+23:41:09,804 diembft.logger.logger INFO Node received proposal message and started processing
+23:41:09,806 diembft.logger.logger INFO Node Verified Signatures and are valid
+23:41:09,807 diembft.logger.logger INFO Node Sending Vote Message to Next Leader
+23:41:09,819 diembft.logger.logger INFO Node received proposal message and started processing
+23:41:09,824 diembft.logger.logger INFO Node Verified Signatures and are valid
+23:41:09,824 diembft.logger.logger INFO Node Sending Vote Message to Next Leader
+23:41:09,834 diembft.logger.logger INFO Node received proposal message and started processing
+23:41:09,841 diembft.logger.logger INFO Node Verified Signatures and are valid
+23:41:09,841 diembft.logger.logger INFO Node Sending Vote Message to Next Leader
+23:41:09,857 diembft.logger.logger INFO Node received proposal message and started processing
+23:41:09,865 diembft.logger.logger INFO Node Verified Signatures and are valid
+23:41:09,867 diembft.logger.logger INFO Node Sending Vote Message to Next Leader
+23:41:09,879 diembft.logger.logger INFO Node received proposal message and started processing
+23:41:09,909 diembft.logger.logger INFO Node Verified Signatures and are valid
+23:41:09,910 diembft.logger.logger INFO Node Sending Vote Message to Next Leader
+23:41:09,919 diembft.logger.logger INFO Node received proposal message and started processing
+23:41:09,920 diembft.logger.logger INFO Node Verified Signatures and are valid
+23:41:09,920 diembft.logger.logger INFO Node Sending Vote Message to Next Leader
+23:41:09,959 diembft.logger.logger INFO Node received proposal message and started processing
+23:41:09,962 diembft.logger.logger INFO Node Verified Signatures and are valid
+23:41:09,963 diembft.logger.logger INFO Node Sending Vote Message to Next Leader
+23:41:09,971 diembft.logger.logger INFO Node received proposal message and started processing
+23:41:09,973 diembft.logger.logger INFO Node Verified Signatures and are valid
+23:41:09,974 diembft.logger.logger INFO Node Sending Vote Message to Next Leader
+23:41:09,981 diembft.logger.logger INFO Node received proposal message and started processing
+23:41:09,983 diembft.logger.logger INFO Node Verified Signatures and are valid
+23:41:09,984 diembft.logger.logger INFO Node Sending Vote Message to Next Leader
+23:41:09,990 diembft.logger.logger INFO Node received proposal message and started processing
+23:41:09,993 diembft.logger.logger INFO Node Verified Signatures and are valid
+23:41:09,993 diembft.logger.logger INFO Node Sending Vote Message to Next Leader
+23:41:10,1 diembft.logger.logger INFO Node received proposal message and started processing
+23:41:10,3 diembft.logger.logger INFO Node Verified Signatures and are valid
+23:41:10,4 diembft.logger.logger INFO Node Sending Vote Message to Next Leader
+23:41:10,12 diembft.logger.logger INFO Node received proposal message and started processing
+23:41:10,15 diembft.logger.logger INFO Node Verified Signatures and are valid
+23:41:10,16 diembft.logger.logger INFO Node Sending Vote Message to Next Leader
+23:41:10,23 diembft.logger.logger INFO Node received proposal message and started processing
+23:41:10,26 diembft.logger.logger INFO Node Verified Signatures and are valid
+23:41:10,26 diembft.logger.logger INFO Node Sending Vote Message to Next Leader

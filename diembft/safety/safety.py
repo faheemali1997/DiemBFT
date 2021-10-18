@@ -24,6 +24,7 @@ class Safety(Logger):
         self.verifier = verifier
         self.block_tree = block_tree
         self.node_id = node_id
+        self.logger = Logger.get_logger(self.node_id)
 
     def increase_highest_vote_round(self, round):
         self.highest_vote_round = max(self.highest_vote_round, round)

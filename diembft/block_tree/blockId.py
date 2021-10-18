@@ -11,4 +11,6 @@ class BlockId:
         self.client_request = client_request
 
     def __repr__(self):
-        return self.author+str(self.round)+ ''.join(self.payload)+ str(self.id)+''.join(self.signatures)+str(self.client_request)
+        return self.author+str(self.round)+ ''.join(self.payload)+ str(self.id)+''.join(
+            [s.message for s in self.signatures]
+        )+str(self.client_request)

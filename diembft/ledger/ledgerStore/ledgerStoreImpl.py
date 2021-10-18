@@ -1,7 +1,7 @@
 from treelib import Tree
 from diembft.block_tree.block import Block
 from diembft.ledger.ledgerStore.ledgerStore import LedgerStore
-from diembft.utilities.constants import GENESIS
+from diembft.utilities.constants import GENESIS, GENESIS_PARENT_ID, GENESIS_GRAND_PARENT_ID
 
 
 class LedgerStoreImpl(LedgerStore):
@@ -30,7 +30,7 @@ class LedgerStoreImpl(LedgerStore):
 
     def prune(self, block_id):
 
-        if block_id == GENESIS:
+        if block_id == GENESIS or block_id == GENESIS_PARENT_ID or block_id == GENESIS_GRAND_PARENT_ID:
             return
 
         node = self.tree.get_node(block_id)

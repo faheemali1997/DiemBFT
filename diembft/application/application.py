@@ -15,6 +15,7 @@ from diembft.messages.timeOutMessage import TimeOutMessage
 from diembft.certificates.timeOutCertficate import TimeOutCertificate
 from diembft.block_tree.ledgerCommitInfo import LedgerCommitInfo
 from diembft.block_tree.client_request import ClientRequest
+from diembft.cache.cache import Cache
 
 
 class Application:
@@ -30,6 +31,7 @@ class Application:
         self.safety = Safety(self.block_tree, self.node_id, self.ledger, self.verifier)
         self.pacemaker = Pacemaker(self.safety, self.block_tree, BYZANTINE_NODES, timer_constant)
         self.leader_election = LeaderElection(nodes, self.pacemaker, self.ledger)
+        self.cache = Cache()
 
     @staticmethod
     def generate_genesis_qc():
@@ -66,6 +68,12 @@ class Application:
         curr_leader = self.leader_election.get_leader(current_round)
         if p.block.round != current_round or p.sender != curr_leader or p.block.author != curr_leader:
             return [None, None]
+        if not self.cache.check_request_id(p.block.client_request):
+            # Put to cache to avoid re-processing
+            self.cache.put_request_id(p.block.client_request)
+        else:
+            # We have already processed this, no ignore
+            return [None, None]
         self.block_tree.execute_and_insert(p.block)
         vote_msg = self.safety.make_vote(p.block, p.last_round_tc)
         if vote_msg is not None:
@@ -96,14 +104,19 @@ class Application:
     def process_new_round_event(self, last_tc):
         curr_leader = self.leader_election.get_leader(self.pacemaker.current_round)
         if curr_leader == self.node_id:
-            block = self.block_tree.generate_block(self.mem_pool.get_message(), self.pacemaker.current_round)
+
+            new_message = self.mem_pool.get_message()
+            while new_message is not None and self.cache.check_request_id(new_message.client_request):
+                new_message = self.mem_pool.get_message()
+
+            block = self.block_tree.generate_block(new_message, self.pacemaker.current_round)
             # TODO: Send it to da file and let da file handle sending to all nodes
             return ProposalMsg(
                 block,
                 last_tc,
                 self.block_tree.high_commit_qc,
                 self.node_id
-            )
+            ) if block is not None else None
         return None
 
 

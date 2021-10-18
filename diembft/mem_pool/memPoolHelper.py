@@ -11,5 +11,5 @@ class MemPoolHelper:
     def get_message(self):
         return self.mem_pool.deque()
 
-    def put_message(self, message:Message):
+    def put_message(self, message: Message):
         self.mem_pool.enque(message)

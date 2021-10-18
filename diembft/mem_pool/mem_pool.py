@@ -1,5 +1,6 @@
 from diembft.utilities.nop import Nop
 from diembft.mem_pool.message import Message
+from threading import Lock
 
 """
 MemPool class takes care of two things:
@@ -12,6 +13,7 @@ class MemPool:
 
     def __init__(self):
         self.queue = []
+        self.lock = Lock()
 
     # Only Leader deques
     def deque(self):
@@ -21,13 +23,11 @@ class MemPool:
         if len(queue) > 0:
             return queue.pop(0)
 
-        print('In Mem-pool ', 'I am empty')
+        return None
 
-        # send a No-op with no-op client id and no-op signature
-        # whitelist the signature and client_id
-        return Nop('-1', '')
-
-    # Client enques
+    # Client enques as there can be multiple clients, use lock to synchronize
     def enque(self, message: Message):
         self.queue.append(message)
+        self.queue.append(Nop('-1', ''))
+        self.queue.append(Nop('-1', ''))
 

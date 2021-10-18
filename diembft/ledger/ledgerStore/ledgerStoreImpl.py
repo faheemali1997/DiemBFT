@@ -26,6 +26,9 @@ class LedgerStoreImpl(LedgerStore):
         return self.tree.remove_node(block_id)
 
     def find(self, block_id):
+        print('Shoeing tree')
+        self.show()
+        print( ' Failing here ', self.tree.get_node(block_id), block_id)
         return self.tree.get_node(block_id)
 
     def prune(self, block_id):

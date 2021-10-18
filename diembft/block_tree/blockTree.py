@@ -21,6 +21,9 @@ class BlockTree:
 
     def generate_block(self, message: Message, current_round):
 
+        if message is None:
+            return None
+
         # Create a BlockId object and hash it.
         block_id = BlockId(self.node_id, current_round, message.transactions, self.high_qc, message.client_request)
 
@@ -62,7 +65,6 @@ class BlockTree:
         if qc is not None and qc.ledger_commit_info and qc.ledger_commit_info.commit_state_id is not None:
 
             if qc.vote_info.parent_id != GENESIS and qc.vote_info.parent_id != GENESIS_PARENT_ID and qc.vote_info.parent_id != GENESIS_GRAND_PARENT_ID:
-                print(' XYZ ', qc.vote_info.parent_id)
                 self.ledger.commit(qc.vote_info.parent_id)
 
                 if qc.vote_info.parent_id in self.pending_votes:

@@ -19,6 +19,10 @@ from diembft.block_tree.client_request import ClientRequest
 
 import traceback
 
+
+#############################################################
+#########        Client Process        ######################
+#############################################################
 class Client(process):
     def setup(node_id:str, replica_nodes:set, signature:str):
         self.node_id = node_id
@@ -54,6 +58,9 @@ class Client(process):
         self.count += 1
 
 
+#############################################################
+#########       Replica Process        ######################
+#############################################################
 class Replica(process):
 
     def setup(nodes: set, node_id: str, mapper:dict, keys: list, nodes_mapper: dict()):
@@ -155,14 +162,31 @@ class Replica(process):
         except Exception as e:
             traceback.print_exc()
 
+#############################################################
+#########        Main Process          ######################
+#############################################################
 def main():
 
     output('Main Here starting')
 
-    nodes_count = int(sys.argv[1]) if len(sys.argv) > 1 else 4
-    client_count = int(sys.argv[2]) if len(sys.argv) > 1 else 1
+    nodes_count = int(sys.argv[1]) if len(sys.argv) >= 1 else 4
+    client_count = int(sys.argv[2]) if len(sys.argv) >= 2 else 1
+    replica_timeout = int(sys.argv[3]) if len(sys.argv) >= 3 else 4
+    client_delay = int(sys.argv[4]) if len(sys.sys.argv) >= 4 else 4
+    seed_val = int(sys.argv[4]) if len(sys.sys.argv) >= 5 else 10
+    faulty_clients = int(sys.argv[4]) if len(sys.sys.argv) >= 6 else 2
 
-    config(channel='reliable', clock = "lamport")
+    config(channel='fifo', clock = "lamport")
+
+    # Configurations to be send to run module
+    _config = {
+        replica_timeout: replica_timeout,
+        nodes_count: nodes_count,
+        client_count: client_count,
+        client_delay : client_delay,
+        seed_val : seed_val,
+        faulty_clients : faulty_clients
+    }
 
     replicas = new(Replica, num = nodes_count)
 

@@ -2,7 +2,7 @@
 
 configs_four_node = {
     'num_replicas': 4,
-    'num_clients': 1,
+    'num_clients': 3,
     'timer_constant': 4,
     'seed_value': 10,
     'num_byzentine_nodes': 1,
@@ -11,7 +11,7 @@ configs_four_node = {
 
 configs_seven_node = {
     'num_replicas': 7,
-    'num_clients': 1,
+    'num_clients': 3,
     'timer_constant': 4,
     'seed_value': 10,
     'num_byzentine_nodes': 2,

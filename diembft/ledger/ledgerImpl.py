@@ -38,7 +38,6 @@ class LedgerImpl(Ledger):
 
     # Returns the Block from the in cache tree
     def committed_block(self, block_id):
-        print('BLOCKXYZ ', block_id)
         return self.ledger_store.find(block_id).data
 
     def write_ledger_to_file(self, block_id):

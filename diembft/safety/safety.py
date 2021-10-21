@@ -53,7 +53,7 @@ class Safety(Logger):
             return False
         return Safety.check_consecutive(current_round, qc_round) or Safety.check_consecutive(current_round, tc.round)
 
-    def commit_state_id(self, block_round, qc: QC):
+    def commit_state_id_candidate(self, block_round, qc: QC):
         if Safety.check_consecutive(block_round, qc.vote_info.round):
             return self.ledger.pending_state(qc.vote_info.id)
         return None
@@ -98,7 +98,7 @@ class Safety(Logger):
                 self.ledger.pending_state(b.id)
             )
             ledger_commit_info = LedgerCommitInfo(
-                self.commit_state_id(b.round, b.qc),
+                self.commit_state_id_candidate(b.round, b.qc),
                 Verifier.encode(str(vote_info)),
                 b.client_request
             )

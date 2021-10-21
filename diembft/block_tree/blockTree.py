@@ -15,6 +15,7 @@ class BlockTree:
         self.pending_votes = {}
         # TODO: high_qc should be parent of genesis
         self.high_qc: QC = genesis_qc
+        # TODO: Change this to genesis_parent_qc
         self.high_commit_qc: QC = genesis_qc  # At the start we have the genesis QC as the high_qc
         self.node_id = node_id
         self.ledger = ledger
@@ -63,7 +64,6 @@ class BlockTree:
         if qc is not None and qc.ledger_commit_info and qc.ledger_commit_info.commit_state_id is not None:
 
             if qc.vote_info.parent_id != GENESIS and qc.vote_info.parent_id != GENESIS_PARENT_ID and qc.vote_info.parent_id != GENESIS_GRAND_PARENT_ID:
-                print(' XYZ ', qc.vote_info.parent_id)
                 self.ledger.commit(qc.vote_info.parent_id)
 
                 if qc.vote_info.parent_id in self.pending_votes:
@@ -74,5 +74,4 @@ class BlockTree:
             # self.high_commit_qc = max(qc, self.high_commit_qc, key=lambda a, b: a.vote_info.round > b.vote_info.round)
 
         # self.high_qc = max(qc, self.high_qc, key=lambda a, b: a.vote_info.round > b.vote_info.round)
-        print(' QC ', self.high_qc.round, qc.vote_info.round)
         self.high_qc = (qc if qc.vote_info.round > self.high_qc.round else self.high_qc)

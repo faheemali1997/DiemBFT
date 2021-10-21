@@ -6,6 +6,8 @@ import sys
 # config import
 from config.config import configs_four_node,configs_seven_node
 
+from random import randrange
+
 #repolica dependencies
 from diembft.mem_pool.memPoolHelper import MemPoolHelper
 from diembft.application.application import Application
@@ -23,17 +25,19 @@ from diembft.block_tree.client_request import ClientRequest
 import traceback
 
 class Client(process):
-    def setup(node_id:str, replica_nodes:set, signature:str):
+    def setup(node_id:str, replica_nodes:set, signature:str, byzentine: int):
         self.node_id = node_id
         self.replica_nodes = replica_nodes
         self.count = 0
+        self.byzentine_nodes = byzentine
+        self.transactions = ["Add","Subtract","Delete","Query"]
 
     def run():
         message = self.create_requests()
 
         send(('client_message', message), to=self.replica_nodes)
 
-        while(self.count < 2):
+        while(self.count <= self.byzentine_nodes):
             pass
 
         output('Client: Request is executed')
@@ -47,7 +51,7 @@ class Client(process):
             "66527576-2ec6-11ec-8d3d-0242ac130003"
         )
         return Message(
-            ["Add"],
+            self.transactions[randrange(0,4)],
             'signature',
             client_request
         )
@@ -192,7 +196,7 @@ def main():
     for i,c in enumerate(clients):
         client_id = get_client_identifier(i)
         nodes_mapper[client_id] = c
-        setup(c, (client_id, replicas , ''))
+        setup(c, (client_id, replicas , '',byzentine_nodes))
 
     for i,r in enumerate(replicas):
         generate_keys = GenerateKeys()

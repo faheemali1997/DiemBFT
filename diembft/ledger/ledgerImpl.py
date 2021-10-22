@@ -1,3 +1,5 @@
+import inspect
+
 from diembft.utilities.fileHandler import FileHandler
 from diembft.ledger.ledger import Ledger
 from diembft.ledger.ledgerStore.ledgerStoreImpl import LedgerStoreImpl
@@ -12,6 +14,8 @@ class LedgerImpl(Ledger):
         super().__init__()
         self.ledger_store = LedgerStoreImpl()
         self.file = FileHandler(node_id=node_id)
+        self.block_set = set()
+
 
     def speculate(self, prev_block_id, block_id, block: Block):
         prev_state_id = self.pending_state(prev_block_id)
@@ -42,10 +46,13 @@ class LedgerImpl(Ledger):
 
     def write_ledger_to_file(self, block_id):
         node = self.ledger_store.find(block_id)
+        if block_id in self.block_set:
+            return
+        self.block_set.add(block_id)
         if not node or not node.data:
             return
-        self.file.write_file(str(block_id) + " ")
-        self.file.write_file(str(node.data.payload) + "\n")
+        self.file.write_file(str(block_id) + " " + str(node.data.payload) + "\n")
+        # self.file.write_file(str(node.data.payload) + "\n")
 
 # if __name__ == "__main__":
 #     a = LedgerStoreImpl()

@@ -23,6 +23,8 @@ from diembft.mem_pool.message import Message
 from diembft.block_tree.client_request import ClientRequest
 
 import traceback
+import random
+import uuid
 
 class Client(process):
     def setup(node_id:str, replica_nodes:set, signature:str, byzentine: int):
@@ -42,13 +44,35 @@ class Client(process):
 
         output('Client: Request is executed')
 
+        self.count = 0
+
+        message1 = self.create_requests()
+
+        send(('client_message', message1), to=self.replica_nodes)
+
+        while(self.count <= self.byzentine_nodes):
+            pass
+
+        output('Client: Request is executed')
+
+
+        self.count = 0
+        message2 = self.create_requests()
+
+        send(('client_message', message2), to=self.replica_nodes)
+
+        while(self.count <= self.byzentine_nodes):
+            pass
+
+        output('Client: Request is executed')
+
         #show have a await statement here
 
 
     def create_requests():
         client_request  = ClientRequest(
             self.node_id,
-            "66527576-2ec6-11ec-8d3d-0242ac130003"
+            str(uuid.uuid4())
         )
         return Message(
             self.transactions[randrange(0,4)],

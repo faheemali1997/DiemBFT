@@ -77,9 +77,9 @@ class LeaderElection:
             self.reputation_leaders[current_round + 1] = self.elect_reputation_leader(qc)
 
     def get_leader(self, round):
-
-        if round in self.reputation_leaders.keys():
-            return self.reputation_leaders[round]
+        #
+        # if round in self.reputation_leaders.keys():
+        #     return self.reputation_leaders[round]
         index = (round // 2) % len(self.validators)
 
         # Simply return a leader by round robin selection

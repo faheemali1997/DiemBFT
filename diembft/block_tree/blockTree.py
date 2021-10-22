@@ -7,6 +7,7 @@ from diembft.utilities.verifier import Verifier
 from diembft.block_tree.blockId import BlockId
 from diembft.utilities.constants import GENESIS
 from diembft.mem_pool.message import Message
+from diembft.block_tree.voteinfo import VoteInfo
 
 
 class BlockTree:
@@ -17,6 +18,24 @@ class BlockTree:
         self.high_qc: QC = genesis_qc
         # TODO: Change this to genesis_parent_qc
         self.high_commit_qc: QC = genesis_qc  # At the start we have the genesis QC as the high_qc
+        self.node_id = node_id
+        self.ledger = ledger
+        self.byzentine_nodes = byzentine_nodes
+        self.high_qc: QC = genesis_qc
+        # TODO: Change this to genesis_parent_qc
+        self.genesis_parent_vote_info = VoteInfo(
+            GENESIS_PARENT_ID,
+            self.high_qc.vote_info.round - 1,
+            GENESIS_GRAND_PARENT_ID,
+            self.high_qc.vote_info.parent_round - 1,
+            None
+        )
+        self.high_commit_qc = QC(
+            self.genesis_parent_vote_info,
+            None,
+            self.genesis_parent_vote_info.round,
+            None
+        )  # At the start we have the genesis QC as the high_qc
         self.node_id = node_id
         self.ledger = ledger
         self.byzentine_nodes = byzentine_nodes

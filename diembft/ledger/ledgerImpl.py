@@ -1,3 +1,5 @@
+import inspect
+
 from diembft.utilities.fileHandler import FileHandler
 from diembft.ledger.ledger import Ledger
 from diembft.ledger.ledgerStore.ledgerStoreImpl import LedgerStoreImpl
@@ -42,6 +44,9 @@ class LedgerImpl(Ledger):
 
     def write_ledger_to_file(self, block_id):
         node = self.ledger_store.find(block_id)
+        if node is not None:
+            return
+
         if not node or not node.data:
             return
         self.file.write_file(str(block_id) + " ")
